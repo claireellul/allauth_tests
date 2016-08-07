@@ -6,7 +6,7 @@ This code sample is based mainly on the code sample provided here: http://www.sa
 
 Bug fixes and changes made to the original code from Sarah Hangstrom
 
-1. removed all references to {% load url from future %} as this is not needed in the version of Django being used: version 1.9.9 running under Python 2.7
+1. removed all references to {% load url from future %} as this is not needed in the version of Django being used: version 1.9.9 running under Python 2.7 (these are in the .html files)
 
 2. added the twitter provider as follows (repeated for the other providers):
 - create an App on the given provider and get a secret key and an application key (these may have different names)
@@ -45,7 +45,8 @@ Bug fixes and changes made to the original code from Sarah Hangstrom
       /larb/static/img/
 
 3.  Added the code to enable the linking of additional social media accounts to the index.html file
-    <!-- xmp tags below allow the code to be displayed as plain text -->
+    
+
     <xmp>	{% load socialaccount %}
       <p><a href="{% provider_login_url "facebook" process="connect" %}">Connect a facebook account</a></p>
       <p><a href="{% provider_login_url "google" process="connect" %}">Connect a Google account</a></p>
