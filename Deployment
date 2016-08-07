@@ -1,0 +1,184 @@
+These instructions assume that you have the following already installed
+
+1. Python 2.7
+2. Django Version 1.9.9 (run this command to find the version: python -c "import django; print(django.get_version())" )
+3. Django-allauth version VERSION = (0, 25, 2, 'final', 0)  (the version can be found in in __init__.py)
+4. A postgres database installation, and some knowledge of psql  (with a postgres user and password if needed)
+5. Git installed on your local machine and basic knowledge of how to use git
+
+
+The instructions have been tested on Ubuntu 14.04 (Ubuntu 14.04.5 LTS).  
+
+
+Step 1 - Download the repository from git as follows
+
+        Create a new local directory on your machine to store the code
+        
+        cd to that directory
+        
+        git clone https://github.com/claireellul/allauth_tests.git
+          
+            (this will download the whole repository - if you only want a branch use: git clone -b <branchname>  https://github.com/claireellul/allauth_tests.git)
+    
+        you will see a sub-directory called allauth_tests created 
+        
+        
+Step 2 - Setup the database
+
+        start psql  by typing the following at the command prompt
+            su postgres
+            psql
+        
+        create the new database
+            CREATE DATABASE authall OWNER django;
+        
+        switch to the database
+            \connect authall
+            
+        type \d   you should get 'no relations found;
+        
+        type \q to quit the database
+
+
+Step 3 - Add PostGIS and HBASE to the database
+
+        at the command prompt type the following
+        
+        psql -d authall -c 'create extension postgis;'
+        psql -d authall -c 'create extension hstore;'
+
+        if this has worked the words CREATE EXTENSION should appear twice
+        
+        
+Step 5 - check that the extensions are created correctly
+
+        su postgres
+        
+        psql
+        
+        \connect authall
+        
+        \d   
+        
+        You should see the following tables:
+        
+             Schema |       Name        | Type  |  Owner   
+            --------+-------------------+-------+----------
+             public | geography_columns | view  | postgres
+             public | geometry_columns  | view  | postgres
+             public | raster_columns    | view  | postgres
+             public | raster_overviews  | view  | postgres
+             public | spatial_ref_sys   | table | postgres
+
+
+
+Step 5 - configure the database connection
+
+        open the settings.py file (from the vort directory) and change the database connection as required, for example:
+        
+        
+            DATABASES = {
+                'default': {
+                'ENGINE': 'django.contrib.gis.db.backends.postgis',
+                'NAME': 'authall',
+                'USER': 'django',
+                'PASSWORD': 'django123',
+                'HOST': 'localhost',
+                'PORT': '',
+                }
+            }
+
+
+Step 6 - create the required DJANGO and AUTHALL tables in the database
+
+        cd to the allauth-tutorial directory
+        
+        type:
+            python manage.py migrate
+            
+        You should see a list of the new tables being created
+        
+        then check that they exist as follows:
+        
+            su postgres
+            psql
+            \CONNECT authall
+            \d
+            
+            which will show the following
+                    Schema |                 Name                 |   Type   |  Owner   
+                    --------+--------------------------------------+----------+----------
+                     public | account_emailaddress                 | table    | django
+                     public | account_emailaddress_id_seq          | sequence | django
+                     public | account_emailconfirmation            | table    | django
+                     public | account_emailconfirmation_id_seq     | sequence | django
+                     public | auth_group                           | table    | django
+                     public | auth_group_id_seq                    | sequence | django
+                     public | auth_group_permissions               | table    | django
+                     public | auth_group_permissions_id_seq        | sequence | django
+                     public | auth_permission                      | table    | django
+                     public | auth_permission_id_seq               | sequence | django
+                     public | auth_user                            | table    | django
+                     public | auth_user_groups                     | table    | django
+                     public | auth_user_groups_id_seq              | sequence | django
+                     public | auth_user_id_seq                     | sequence | django
+                     public | auth_user_user_permissions           | table    | django
+                     public | auth_user_user_permissions_id_seq    | sequence | django
+                     public | django_admin_log                     | table    | django
+                     public | django_admin_log_id_seq              | sequence | django
+                     public | django_content_type                  | table    | django
+                     public | django_content_type_id_seq           | sequence | django
+                     public | django_migrations                    | table    | django
+                     public | django_migrations_id_seq             | sequence | django
+                     public | django_session                       | table    | django
+                     public | django_site                          | table    | django
+                     public | django_site_id_seq                   | sequence | django
+                     public | geography_columns                    | view     | postgres
+                     public | geometry_columns                     | view     | postgres
+                     public | raster_columns                       | view     | postgres
+                     public | raster_overviews                     | view     | postgres
+                     public | socialaccount_socialaccount          | table    | django
+                     public | socialaccount_socialaccount_id_seq   | sequence | django
+                     public | socialaccount_socialapp              | table    | django
+                     public | socialaccount_socialapp_id_seq       | sequence | django
+                     public | socialaccount_socialapp_sites        | table    | django
+                     public | socialaccount_socialapp_sites_id_seq | sequence | django
+                     public | socialaccount_socialtoken            | table    | django
+                     public | socialaccount_socialtoken_id_seq     | sequence | django
+                     public | spatial_ref_sys                      | table    | postgres
+                     public | user_profile                         | table    | django
+                     public | user_profile_id_seq                  | sequence | django
+        
+Step 6 - insert the required data into the database (example here is for three providers, replace the security details as required)
+        su postgres
+        psql
+        \CONNECT authall
+        
+        UPDATE django_site SET DOMAIN = '127.0.0.1:8000', name = 'Vort' WHERE id=1;
+        INSERT INTO socialaccount_socialapp (provider, name, secret, client_id, key)
+        VALUES ('facebook', 'Facebook', 'xxx', 'xxx', '');
+        INSERT INTO socialaccount_socialapp_sites (socialapp_id, site_id) VALUES (1,1);
+        INSERT INTO socialaccount_socialapp (provider, name, secret, client_id, key)
+        VALUES ('twitter', 'Twitter', 'xxx', 'xxx', '');
+        INSERT INTO socialaccount_socialapp_sites (socialapp_id, site_id) VALUES (2,1);
+        INSERT INTO socialaccount_socialapp (provider, name, secret, client_id, key)
+        VALUES ('google', 'Google', 'xxx', 'xxx', '');
+        INSERT INTO socialaccount_socialapp_sites (socialapp_id, site_id) VALUES (3,1);
+
+        
+        
+
+
+Step 7 - run the test
+
+        cd to the allauth-tutorial directory
+        
+        type
+            python manage.py runserver 0.0.0.0:8000
+            
+        in a browser open the following URL
+        
+            http://127.0.0.1:8000   (NB: don't use localhost, as twitter/facebook don't accept this as a source URL)
+        
+        (NB: the various social media logos need replacing with better images!)
+        
