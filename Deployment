@@ -40,7 +40,7 @@ Step 2 - Setup the database
         type \q to quit the database
 
 
-Step 3 - Add PostGIS and HBASE to the database
+Step 3 - Add PostGIS and HBASE to the database (this step is optional but is included here as our main Django App uses PostGIS)
 
         at the command prompt type the following
         
