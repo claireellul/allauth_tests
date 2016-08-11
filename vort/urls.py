@@ -8,6 +8,10 @@ urlpatterns = patterns(
     (r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}),
 
     url(r'^', include('larb.urls')),
+	
+	url(r'^', include('rest.urls')),
+	
     url(r'^accounts/', include('allauth.urls')),
     url(r'^admin/', include(admin.site.urls)),
+	 url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 )
