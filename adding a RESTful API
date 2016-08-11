@@ -1,0 +1,4 @@
+Adding a RESTful API
+
+The second part of this test is to see if GeoKey can act as a passthrough service for OAuth authentication.  This will be trialled by first adding a RESTful API as follows:
+
