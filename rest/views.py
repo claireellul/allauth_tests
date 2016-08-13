@@ -7,7 +7,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest.models import Snippet
 from rest.serializers import SnippetSerializer
-
+import requests
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -34,6 +34,22 @@ class JSONResponse(HttpResponse):
         content = JSONRenderer().render(data)
         kwargs['content_type'] = 'application/json'
         super(JSONResponse, self).__init__(content, **kwargs)
+		
+@csrf_exempt
+def callfb(request):
+	"""
+	Call the fb api and get a return value
+	"""
+	if request.method == 'GET':
+		# call the fb login page with an http request type call
+		r = requests.get("http://www.google.com")
+		
+		#return JSONResponse(r.content)
+		return HttpResponse(r.content)
+
+	elif request.method == 'POST':
+		return JSONResponse('POSTXXX', status=400)
+		
 		
 @csrf_exempt
 def snippet_list(request):
