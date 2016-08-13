@@ -8,6 +8,10 @@ from rest_framework.parsers import JSONParser
 from rest.models import Snippet
 from rest.serializers import SnippetSerializer
 import requests
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+from django.http import HttpResponseRedirect
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -42,10 +46,16 @@ def callfb(request):
 	"""
 	if request.method == 'GET':
 		# call the fb login page with an http request type call
-		r = requests.get("http://www.google.com")
-		
+		#r = requests.get('http://developer.cege.ucl.ac.uk:31827/accounts/facebook/login')
+				
+		#r = requests.get('https://www.facebook.com/dialog/oauth?scope=email&state=QM75BrLsrVBN&redirect_uri=http://developer.cege.ucl.ac.uk:31827/accounts/facebook/login/callback&responsetype=code&client_id=176600259418459')		
+				
+		#return render_to_response("accounts/facebook/login/", RequestContext(request))
 		#return JSONResponse(r.content)
-		return HttpResponse(r.content)
+		#return HttpResponse(r.content)
+		
+		# THIS WORKS TO JUST REDIREC THE LOGIN PAGE STRAIGHT BACK TO THE USER ..
+		return HttpResponseRedirect('/accounts/facebook/login')
 
 	elif request.method == 'POST':
 		return JSONResponse('POSTXXX', status=400)
